@@ -2,7 +2,11 @@ import requests
 
 def chat(message: str):
     url = "http://danto.cloud:12138/api/chat"
-    headers = {"Content-Type": "application/json"}
+    headers = {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive"
+    }
 
     data = {
         'message': message,
