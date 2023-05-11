@@ -5,6 +5,8 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 
+import requests
+
 
 @app.route('/')
 def index():
@@ -64,3 +66,17 @@ def get_count():
     """
     counter = Counters.query.filter(Counters.id == 1).first()
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
+
+
+
+@app.route('/chat/<string:message>', methods=['POST'])
+def chat(message: str, ):
+    url = "http://danto.cloud:12138/api/chat"
+    headers = {"Content-Type": "application/json"}
+    
+    data = {
+        'message': message
+    }
+    
+    response = requests.post(url, headers=headers, json=data, stream=True)
+    return response.raw.read(), response.status_code, response.headers.items()
