@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import render_template, request, Response
+from flask_sockets import Sockets
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -7,6 +8,8 @@ from wxcloudrun.response import make_succ_empty_response, make_succ_response, ma
 
 import requests
 
+
+sockets = Sockets(app)
 
 @app.route('/')
 def index():
@@ -69,8 +72,9 @@ def get_count():
 
 
 
-@app.route('/chat/<string:message>', methods=['POST'])
-def chat(message: str, ):
+@sockets.route('/chat/<string:message>')
+def chat_socket(ws, message):
+
     url = "http://danto.cloud:12138/api/chat"
     headers = {"Content-Type": "application/json"}
     
@@ -81,8 +85,5 @@ def chat(message: str, ):
     
     response = requests.post(url, headers=headers, json=data, stream=True)
 
-    def generate():
-        for chunk in response.iter_content(chunk_size=1024):
-            yield chunk
-
-    return Response(generate(), content_type="text/event-stream")
+    for chunk in response.iter_content(chunk_size=1024):
+        ws.send(chunk)
