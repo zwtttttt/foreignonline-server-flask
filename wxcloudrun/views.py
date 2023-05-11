@@ -85,4 +85,4 @@ def chat(message: str, ):
         for chunk in response.iter_content(chunk_size=1024):
             yield chunk
 
-    return Response(generate(), content_type=response.headers['content-type'])
+    return Response(generate(), content_type="text/event-stream")
