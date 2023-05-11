@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, request
+from flask import render_template, request, Response
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -75,10 +75,11 @@ def chat(message: str, ):
     headers = {"Content-Type": "application/json"}
     
     data = {
-        'message': message
+        'message': message,
+        'apiKey': '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'
     }
     
-    # response = requests.post(url, headers=headers, json=data, stream=True)
+    response = requests.post(url, headers=headers, json=data, stream=True)
     # return response.raw.read(), response.status_code, response.headers.items()
 
-    return data
+    return Response(response.iter_content(chunk_size=1024), content_type=response.headers['content-type'])
