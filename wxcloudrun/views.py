@@ -78,5 +78,7 @@ def chat(message: str, ):
         'message': message
     }
     
-    response = requests.post(url, headers=headers, json=data, stream=True)
-    return response.raw.read(), response.status_code, response.headers.items()
+    # response = requests.post(url, headers=headers, json=data, stream=True)
+    # return response.raw.read(), response.status_code, response.headers.items()
+
+    return data
