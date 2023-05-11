@@ -98,9 +98,7 @@ def stream():
         yield "data: {}\n\n".format(str(datetime.now()))
         yield "data: {}\n\n".format(str(datetime.now()))
 
-        interval = 1
         while True:
-            time.sleep(interval)
             yield "data: {}\n\n".format(str(datetime.now()))
 
     return Response(generate(), mimetype='text/event-stream', headers={
