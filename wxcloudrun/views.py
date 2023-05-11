@@ -80,6 +80,9 @@ def chat(message: str, ):
     }
     
     response = requests.post(url, headers=headers, json=data, stream=True)
-    # return response.raw.read(), response.status_code, response.headers.items()
 
-    return Response(response.iter_content(chunk_size=1024), content_type=response.headers['content-type'])
+    def generate():
+        for chunk in response.iter_content(chunk_size=1024):
+            yield chunk
+
+    return Response(generate(), content_type=response.headers['content-type'])
