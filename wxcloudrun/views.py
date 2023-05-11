@@ -85,5 +85,6 @@ def chat_socket(ws, message):
     
     response = requests.post(url, headers=headers, json=data, stream=True)
 
+
     for chunk in response.iter_content(chunk_size=1024):
         ws.send(chunk)
