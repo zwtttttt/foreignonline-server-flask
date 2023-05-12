@@ -1,5 +1,6 @@
 from datetime import datetime
 from flask import render_template, request
+from flask_sockets import Sockets
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -83,3 +84,16 @@ def chat(message: str, ):
     # return response.raw.read(), response.status_code, response.headers.items()
 
     return response.json()
+
+
+sockets = Sockets(app)
+@sockets.route('/chat')
+def chat(ws):
+    while not ws.closed:
+        message = ws.receive()
+        if message:
+            # 处理接收到的消息
+            response = {
+                'result': 'received message: {}'.format(message)
+            }
+            ws.send(response)
