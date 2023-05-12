@@ -1,21 +1,22 @@
-import requests
+from flask import Flask
+from flask_sockets import Sockets
+from geventwebsocket.handler import WebSocketHandler
+from gevent.pywsgi import WSGIServer
 
-def chat(message: str):
-    url = "http://danto.cloud:12138/api/chat"
-    headers = {"Content-Type": "application/json"}
-    
-    data = {
-        'message': message,
-        # 'apiKey': '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'
-    }
-    
-    response = requests.post(url, headers=headers, json=data, stream=True)
-    for chunk in response.iter_content(chunk_size=1024):
-        if chunk:
-            print(chunk.decode())
+app = Flask(__name__)
+sockets = Sockets(app)
 
-    return
-
+@sockets.route('/chat')
+def chat(ws):
+    while not ws.closed:
+        message = ws.receive()
+        if message:
+            # 处理接收到的消息
+            response = {
+                'result': 'received message: {}'.format(message)
+            }
+            ws.send(response)
 
 if __name__ == '__main__':
-    chat('hello')
+    http_server = WSGIServer(('0.0.0.0', 5000), app, handler_class=WebSocketHandler)
+    http_server.serve_forever()

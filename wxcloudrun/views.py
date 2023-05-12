@@ -1,6 +1,6 @@
 from datetime import datetime
+import json
 from flask import render_template, request
-from flask_sockets import Sockets
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -70,31 +70,22 @@ def get_count():
 
 
 
-@app.route('/chat/<string:message>', methods=['POST'])
-def chat(message: str, ):
-    url = "http://danto.cloud:12138/api/chat"
-    headers = {"Content-Type": "application/json"}
-    
-    data = {
-        'message': message,
-        'apiKey': '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'
-    }
-    
-    response = requests.post(url, headers=headers, json=data, stream=True)
-    # return response.raw.read(), response.status_code, response.headers.items()
-
-    return response.json()
-
-
-
+from flask_sockets import Sockets
 sockets = Sockets(app)
 @sockets.route('/chat')
 def chat(ws):
     while not ws.closed:
         message = ws.receive()
         if message:
-            # 处理接收到的消息
-            response = {
-                'result': 'received message: {}'.format(message)
+            url = "http://danto.cloud:12138/api/chat"
+            headers = {"Content-Type": "application/json"}
+
+            data = {
+                'message': message,
+                'apiKey': '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'
             }
-            ws.send(response)
+
+            response = requests.post(url, headers=headers, json=data, stream=True)
+            result = response.json()
+
+            ws.send(json.dumps(result))
