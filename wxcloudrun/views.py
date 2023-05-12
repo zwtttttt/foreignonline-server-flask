@@ -79,6 +79,7 @@ def chat(message: str):
         # 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
         # 'apiKey': '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'
     }
+    
 
     def generate():
         with requests.post(url, headers=headers, json=data, stream=True) as response:
