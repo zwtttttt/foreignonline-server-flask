@@ -76,13 +76,12 @@ def chat(message: str):
 
     data = {
         'message': message,
-        'apiKey': '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'
+        'apiKey': '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'
     }
 
     def generate():
-        response = requests.post(url, headers=headers, json=data, stream=True)
-        for chunk in response.iter_content(chunk_size=1024):
-            print(chunk.decode())
-            yield chunk.decode()
+        with requests.post(url, headers=headers, json=data, stream=True) as response:
+            for chunk in response.iter_content(chunk_size=1024):
+                yield chunk.decode()
 
     return Response(generate(), content_type='text/event-stream')
