@@ -86,6 +86,7 @@ def chat(message: str, ):
     return response.json()
 
 
+
 sockets = Sockets(app)
 @sockets.route('/chat')
 def chat(ws):
