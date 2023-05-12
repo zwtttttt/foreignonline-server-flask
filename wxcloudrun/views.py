@@ -76,7 +76,8 @@ def chat(message: str):
 
     data = {
         'message': message,
-        'apiKey': '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'
+        # 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
+        # 'apiKey': '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'
     }
 
     def generate():
