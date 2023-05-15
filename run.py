@@ -1,8 +1,12 @@
 # 创建应用实例
 import sys
 
+from flask_socketio import SocketIO
 from wxcloudrun import app
 
-# 启动Flask Web服务
+# 创建 SocketIO 实例
+socketio = SocketIO(app, path="/chat")
+
+# 启动 Flask Web 服务
 if __name__ == '__main__':
-    app.run(host=sys.argv[1], port=sys.argv[2])
+    socketio.run(app, host=sys.argv[1], port=sys.argv[2])
