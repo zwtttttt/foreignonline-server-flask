@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, request, Response
+from flask import render_template, request, Response, jsonify
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -87,3 +87,22 @@ def chat(message: str):
                 yield chunk.decode()
 
     return Response(generate(), content_type='text/event-stream')
+
+
+# 处理 WebSocket 连接
+@app.route('/websocket/connect')
+def websocket_connect():
+    # 获取客户端 WebSocket 对象
+    ws = request.environ.get('wsgi.websocket')
+    if not ws:
+        return jsonify({'status': 'failed', 'message': 'Not a WebSocket request'})
+
+    # 处理 WebSocket 消息
+    while True:
+        message = ws.receive()
+        if message is None:
+            break
+        print('Received message:', message)
+        ws.send('Server received message: ' + message)
+
+    return jsonify({'status': 'success', 'message': 'WebSocket connection closed'})
