@@ -6,7 +6,10 @@ from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 
 import requests
-
+from flask_cors import CORS
+from flask_sockets import Sockets
+sockets = Sockets(app)
+CORS(app)
 
 @app.route('/')
 def index():
@@ -89,20 +92,8 @@ def chat(message: str):
     return Response(generate(), content_type='text/event-stream')
 
 
-# 处理 WebSocket 连接
-@app.route('/websocket/connect')
-def websocket_connect():
-    # 获取客户端 WebSocket 对象
-    ws = request.environ.get('wsgi.websocket')
-    if not ws:
-        return jsonify({'status': 'failed', 'message': 'Not a WebSocket request'})
-
-    # 处理 WebSocket 消息
-    while True:
+@sockets.route('/')
+def ws(ws):
+    while not ws.closed:
         message = ws.receive()
-        if message is None:
-            break
-        print('Received message:', message)
-        ws.send('Server received message: ' + message)
-
-    return jsonify({'status': 'success', 'message': 'WebSocket connection closed'})
+        ws.send(message)
